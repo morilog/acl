@@ -1,0 +1,32 @@
+{
+    "name": "morilog/acl",
+    "description": "Access control list management for Laravel Framework",
+    "keywords": [
+        "framework",
+        "laravel",
+        "acl",
+        "security",
+        "access control list",
+        "user management",
+        "role",
+        "permission",
+        "morilog"
+    ],
+    "type": "library",
+    "license": "GPL",
+    "autoload": {
+        "psr-4": {
+            "Morilog\\Acl\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Morteza Parvini",
+            "email": "m.parvini@outlook.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+
+    }
+}
