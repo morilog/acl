@@ -25,8 +25,12 @@
             "email": "m.parvini@outlook.com"
         }
     ],
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "require": {
-
+        "illuminate/support": "5.1.*",
+        "illuminate/database": "5.1.*",
+        "illuminate/routing": "5.1.*",
+        "illuminate/auth": "5.1.*",
+        "morilog/value-objects": "dev-master"
     }
 }

@@ -7,16 +7,15 @@ use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Routing\Router;
 use Morilog\Acl\Exceptions\AclException;
+use Morilog\Acl\Managers\Interfaces\PermissionManagerInterface;
+use Morilog\Acl\Managers\Interfaces\RoleManagerInterface;
+use Morilog\Acl\Managers\Interfaces\UserManagerInterface;
 use Morilog\Acl\Models\Guest;
-use Morilog\Acl\Models\Interfaces\PermissionInterface as Permission;
 use Morilog\Acl\Models\Interfaces\PermissionInterface;
-use Morilog\Acl\Models\Interfaces\RoleInterface as Role;
 use Morilog\Acl\Models\Interfaces\RoleInterface;
-use Morilog\Acl\Models\Interfaces\UserInterface as User;
-use Morilog\Acl\Repositories\Interfaces\PermissionRepositoryInterface;
-use Morilog\Acl\Repositories\Interfaces\RoleRepositoryInterface;
-use Morilog\Acl\Repositories\Interfaces\UserRepositoryInterface;
-use Morilog\Acl\ValueObjects\Slug;
+use Morilog\Acl\Models\Interfaces\UserInterface;
+
+use Morilog\ValueObjects\Slug;
 
 class AclManager
 {
@@ -27,19 +26,19 @@ class AclManager
     private $auth;
 
     /**
-     * @var UserRepositoryInterface
+     * @var UserManagerInterface
      */
-    private $userRepo;
+    private $userManager;
 
     /**
-     * @var RoleRepositoryInterface
+     * @var RoleManagerInterface
      */
-    private $roleRepo;
+    private $roleManager;
 
     /**
-     * @var PermissionRepositoryInterface
+     * @var PermissionManagerInterface
      */
-    private $permissionRepo;
+    private $permissionManager;
 
     /**
      * @var CacheRepository
@@ -50,43 +49,43 @@ class AclManager
      * @var array
      */
     private $config;
+
     /**
      * @var Router
      */
     private $router;
-
     /**
      * @var User
      */
     private $user = null;
 
-
     /**
      * @param Guard $auth
-     * @param UserRepositoryInterface $userRepo
-     * @param RoleRepositoryInterface $roleRepo
-     * @param PermissionRepositoryInterface $permissionRepo
+     * @param UserManagerInterface $userManager
+     * @param RoleManagerInterface $roleManager
+     * @param PermissionManagerInterface $permissionManager
      * @param CacheRepository $cache
      * @param ConfigRepository $config
      * @param Router $router
      */
     public function __construct(
         Guard $auth,
-        UserRepositoryInterface $userRepo,
-        RoleRepositoryInterface $roleRepo,
-        PermissionRepositoryInterface $permissionRepo,
+        UserManagerInterface $userManager,
+        RoleManagerInterface $roleManager,
+        PermissionManagerInterface $permissionManager,
         CacheRepository $cache,
         ConfigRepository $config,
         Router $router
     ) {
         $this->auth = $auth;
-        $this->userRepo = $userRepo;
-        $this->roleRepo = $roleRepo;
-        $this->permissionRepo = $permissionRepo;
+        $this->userManager = $userManager;
+        $this->roleManager = $roleManager;
+        $this->permissionManager = $permissionManager;
         $this->cache = $cache;
         $this->config = $config->get('acl');
         $this->router = $router;
     }
+
 
     /**
      * @param $user
@@ -115,43 +114,106 @@ class AclManager
         return new Guest();
     }
 
-    public function getCertainUser()
+    /**
+     * @return UserManagerInterface
+     */
+    public function getUserManager()
     {
-        if ($this->getUser() === null) {
-            throw new AclException('User must be set.');
-        }
-
-        return $this->getUser();
+        return $this->userManager;
     }
 
     /**
-     * @param User $user
-     * @return Collection
+     * @param UserManagerInterface $userManager
      */
-    protected function getUserPermissions(User $user = null)
+    public function setUserManager($userManager)
     {
-        if ($user === null) {
-            return [];
-        }
+        $this->userManager = $userManager;
+    }
 
-        $permissionCacheKey = 'permissions_' . sha1($user->getId());
+    /**
+     * @return RoleManagerInterface
+     */
+    public function getRoleManager()
+    {
+        return $this->roleManager;
+    }
 
-        $permissions = $this->cache->tags('acl_users')->get($permissionCacheKey);
+    /**
+     * @param RoleManagerInterface $roleManager
+     */
+    public function setRoleManager($roleManager)
+    {
+        $this->roleManager = $roleManager;
+    }
+
+    /**
+     * @author Morteza Parvini <m.parvini@outlook.com>
+     * @param UserInterface $user
+     * @return \Illuminate\Support\Collection
+     */
+    protected function getUserPermissions(UserInterface $user)
+    {
+        $permissions = $this->getUserPermissionsFromCache($user);
 
         if (null === $permissions || empty($permissions->toArray())) {
+
             $permissions = $user->getPermissions();
-            $this->cache->tags('acl_users')->forever($permissionCacheKey, $permissions);
+
+            $this->cache
+                ->tags('acl_users')
+                ->forever($this->getUserPermissionCacheKey($user), $permissions);
         }
 
         return $permissions;
     }
 
     /**
-     * @return Collection
+     * @author Morteza Parvini <m.parvini@outlook.com>
+     * @param UserInterface $user
+     * @return string
+     */
+    protected function getUserPermissionCacheKey(UserInterface $user)
+    {
+        return 'permissions_' . sha1($user->getId());;
+    }
+
+    /**
+     * @author Morteza Parvini <m.parvini@outlook.com>
+     * @param UserInterface $user
+     * @param $key
+     * @return array
+     */
+    protected function getUserPermissionsFromCache(UserInterface $user, $key)
+    {
+        return $this->cache
+            ->tags('acl_users')
+            ->get($this->getUserPermissionCacheKey($user));
+    }
+
+
+    /**
+     * @author Morteza Parvini <m.parvini@outlook.com>
+     * @return \Illuminate\Support\Collection
      */
     public function getAllPermissions()
     {
-        return collect($this->cache->get($this->config['permissions_cache_key'], []));
+        $permissons = $this->getAllPermissionsFromCache($this->config['permissions_cache_key']);
+
+        if ($permissons === null) {
+            return $this->permissionManager->getAllPermissions();
+        }
+
+        return collect($permissons);
+    }
+
+    /**
+     * @author Morteza Parvini <m.parvini@outlook.com>
+     * @param $key
+     * @return null|array
+     */
+    protected function getAllPermissionsFromCache($key)
+    {
+        return $this->cache->get($key);
     }
 
     /**
@@ -178,15 +240,10 @@ class AclManager
      */
     public function hasPermissionName($permissionName)
     {
-        if ($this->getUser() === null) {
-            return false;
-        }
-
         $userPermissions = $this->getUserPermissions($this->getUser());
 
         foreach ($userPermissions as $permission) {
             if ($permission->name === $permissionName) {
-
                 return true;
             }
         }
@@ -205,7 +262,7 @@ class AclManager
             throw new AclException('Permissions array is empty!');
         }
 
-        $userPermissions = $this->getUserPermissions($this->getUser())->lists('name');
+        $userPermissions = $this->getUserPermissions($this->getUser())->lists('name')->toArray();
 
         foreach ($permissions as $permission) {
             if (in_array($permission, $userPermissions) === false) {
@@ -227,7 +284,7 @@ class AclManager
             throw new AclException('Permissions array is empty!');
         }
 
-        $userPermissions = $this->getUserPermissions($this->getUser())->lists('name');
+        $userPermissions = $this->getUserPermissions($this->getUser())->lists('name')->toArray();
 
         foreach ($permissions as $permission) {
             if (in_array($permission, $userPermissions)) {
@@ -279,45 +336,35 @@ class AclManager
     }
 
     /**
-     * @param Role $role
+     * @param $role
      * @return bool
      */
-    public function hasRole(Role $role)
+    public function hasRole($role)
     {
-        $roles = $this->getUser()->getRoles()->lists('id');
-
-        return in_array($role->getId(), $roles);
+        return $this->userManager->userHasRole($this->getUser(), $role);
     }
 
     public function hasRoleByName($roleName)
     {
         try {
-            $role = $this->roleRepo->findOneBy('name', $roleName);
+            $role = $this->roleManager->getRoleByNameOrTitle($roleName);
 
             return $this->hasRole($role);
         } catch (ModelNotFoundException $e) {
+
             return false;
         }
     }
 
     /**
+     * @author Morteza Parvini <m.parvini@outlook.com>
      * @param array $roles
      * @return bool
-     * @throws AclException
      */
     public function hasRoles(array $roles)
     {
-        $user = $this->getUser();
-
-        $userRolesIds = $user->getRoles()->lists('id');
-
-        foreach ($roles as $role) {
-            if (!in_array($role->getId(), $userRolesIds)) {
-                return false;
-            }
-        }
-
-        return true;
+        return $this->userManager
+            ->userHasRoles($this->getUser(), $roles);
     }
 
     /**
@@ -327,30 +374,19 @@ class AclManager
      */
     public function hasRolesByName(array $rolesName)
     {
-        $user = $this->getUser();
-
-        $userRolesNames = $user->getRoles()->lists('name');
-
-        foreach ($rolesName as $roleName) {
-            if (!in_array($roleName, $userRolesNames)) {
-                return false;
-            }
-        }
-
-        return true;
+        return $this->userManager
+            ->userHasRoles($this->getUser(), $rolesName);
     }
 
     /**
-     * @param Role $role
+     * @author Morteza Parvini <m.parvini@outlook.com>
+     * @param $role
      * @return mixed
-     * @throws AclException
-     * @internal param User $user
      */
-    public function addRole(Role $role)
+    public function addRole($role)
     {
-        $user = $this->getUser();
-
-        return $this->userRepo->addRoleToUser($user, $role);
+        return $this->userManager
+            ->addRoleToUser($this->getUser(),$this->roleManager->getRole($role));
     }
 
     /**
@@ -361,15 +397,12 @@ class AclManager
     public function addRoleByName($roleName)
     {
         try {
-            $role = $this->roleRepo->findOneBy('name', $roleName);
+            $role = $this->roleManager->getRole($roleName);
         } catch (ModelNotFoundException $e) {
-            $role = $this->roleRepo->create([
-                'name' => (new Slug($roleName))->getValue(),
-                'title' => $roleName
-            ]);
+            $role = $this->roleManager->createRoleByName($roleName);
         }
 
-        return $this->addRole($role);
+        return $this->userManager->addRoleToUser($this->getUser(), $role);
     }
 
     /**
@@ -379,50 +412,35 @@ class AclManager
      */
     public function addRoles(array $roles)
     {
-        $user = $this->getUser();
-
-        return $this->userRepo->addRolesToUser($user, $roles);
+        return $this->userManager->addRolesToUser($this->getUser(), $roles);
     }
 
     public function addRolesByName(array $rolesName)
     {
-        $allRoles = $this->roleRepo->findAll();
-
-        $roles = [];
-        foreach ($rolesName as $name) {
-            $role = $allRoles->where('name', $name)->first();
-
-            if ($role !== null) {
-                $roles[] = $role;
-            }
-        }
-
-        return $this->addRoles($roles);
+        return $this->addRoles($rolesName);
     }
 
     /**
-     * @param Role $role
-     * @param Permission $permission
+     * @param $role
+     * @param $permission
      * @return mixed
      */
-    public function addPermissionToRole(Role $role, Permission $permission)
+    public function addPermissionToRole($role, $permission)
     {
-        return $this->roleRepo->addPermissionToRole($role, $permission);
+        return $this->roleManager->addPermissionToRole($role, $permission);
     }
 
     /**
-     * @param Role $role
+     * @param $role
      * @param $permissionName
      * @return mixed
      */
-    public function addPermissionToRoleByName(Role $role, $permissionName)
+    public function addPermissionToRoleByName($role, $permissionName)
     {
         try {
-            $permission = $this->permissionRepo->findOneBy('name', $permissionName);
+            $permission = $this->permissionManager->getPermission($permissionName);
         } catch (ModelNotFoundException $e) {
-            $permission = $this->permissionRepo->create([
-                'name' => (new Slug($permissionName))->getValue()
-            ]);
+            $permission = $this->permissionManager->createPermissionByName($permissionName);
         }
 
         return $this->addPermissionToRole($role, $permission);
@@ -466,7 +484,7 @@ class AclManager
             }
         }
 
-        return $this->roleRepo->addPermissionsToRole($role, $acceptablePermissions);
+        return $this->roleManager->addPermissionsToRole($role, $acceptablePermissions);
 
     }
 
@@ -477,7 +495,7 @@ class AclManager
             $roleName = $role->getName();
         } else {
             if (is_numeric($role)) {
-                $role = $this->roleRepo->findOneById($role);
+                $role = $this->roleManager->findOneById($role);
                 $roleName = $role->getName();
             } else {
                 $roleName = $role;
