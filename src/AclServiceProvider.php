@@ -22,8 +22,10 @@ class AclServiceProvider extends ServiceProvider
 
     }
 
+
     public function register()
     {
+        $this->mergeConfigFiles();
 
         $this->registerManagers();
 
@@ -42,6 +44,7 @@ class AclServiceProvider extends ServiceProvider
         $this->registerCommands();
 
     }
+
 
     private function registerManagers()
     {
@@ -71,6 +74,17 @@ class AclServiceProvider extends ServiceProvider
             );
         });
     }
+
+
+    private function mergeConfigFiles()
+    {
+        $packageConfigFile = __DIR__ . '/../config/acl.php';
+
+        $this->mergeConfigFrom(
+            $packageConfigFile, 'acl'
+        );
+    }
+
 
     private function registerCommands()
     {
