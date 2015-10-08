@@ -121,6 +121,6 @@ class RoleManager implements RoleManagerInterface
      */
     public function getAllRoles()
     {
-        return $this->roleModel->newQuery()->all();
+        return $this->roleModel->newQuery()->get();
     }
 }
