@@ -49,4 +49,9 @@ interface RoleManagerInterface
      * @return mixed
      */
     public function addPermissionsToRole($role, array $permissions);
+
+    /**
+     * @return \Illuminate\Support\Collection
+     */
+    public function getAllRoles();
 }

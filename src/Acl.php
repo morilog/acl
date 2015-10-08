@@ -1,5 +1,5 @@
 <?php
-namespace Morilog\Acl\Services\Acl;
+namespace Morilog\Acl;
 
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Contracts\Cache\Repository as CacheRepository;
@@ -11,13 +11,11 @@ use Morilog\Acl\Managers\Interfaces\PermissionManagerInterface;
 use Morilog\Acl\Managers\Interfaces\RoleManagerInterface;
 use Morilog\Acl\Managers\Interfaces\UserManagerInterface;
 use Morilog\Acl\Models\Guest;
-use Morilog\Acl\Models\Interfaces\PermissionInterface;
-use Morilog\Acl\Models\Interfaces\RoleInterface;
 use Morilog\Acl\Models\Interfaces\UserInterface;
 
 use Morilog\ValueObjects\Slug;
 
-class AclManager
+class Acl
 {
 
     /**
@@ -160,7 +158,7 @@ class AclManager
             $permissions = $user->getPermissions();
 
             $this->cache
-                ->tags('acl_users')
+                ->tags($this->config['user_permissions_cache_key'])
                 ->forever($this->getUserPermissionCacheKey($user), $permissions);
         }
 
@@ -440,7 +438,7 @@ class AclManager
         try {
             $permission = $this->permissionManager->getPermission($permissionName);
         } catch (ModelNotFoundException $e) {
-            $permission = $this->permissionManager->createPermissionByName($permissionName);
+            $permission = $this->permissionManager->createPermissionByNameAndTitle($permissionName);
         }
 
         return $this->addPermissionToRole($role, $permission);
@@ -451,60 +449,29 @@ class AclManager
      * @param array $permissions
      * @return mixed
      */
-    public function addPermissionsToRole(Role $role, array $permissions)
+    public function addPermissionsToRole($role, array $permissions)
     {
         $allPermissions = $this->getAllPermissions();
-        $acceptablePermissions = [];
 
-        foreach ($permissions as $permission) {
-
-            if ($permission instanceof PermissionInterface) {
-                $acceptablePermissions[] = $permission;
-                continue;
-            }
-
-            if (is_string($permission)) {
-                if (in_array($permission, $allPermissions->lists('name'))) {
-                    $acceptablePermissions[] = $allPermissions->where('name', $permission)->first();
-                }
-                continue;
-            }
-
-            if (is_numeric($permission)) {
-                if (in_array($permission, $allPermissions->lists('id'))) {
-                    $acceptablePermissions[] = $allPermissions->where('id', $permission)->first();
-                }
-            }
-
-            if (is_array($permission)) {
-                if (isset($permission['name']) && in_array($permission['name'], $allPermissions->lists('name'))) {
-                    $acceptablePermissions[] = $allPermissions->where('name', $permission['name'])->first();
-                }
-                continue;
-            }
+        foreach ($permissions as &$permission) {
+            $permission = $this->permissionManager->getPermission($permission);
         }
 
-        return $this->roleManager->addPermissionsToRole($role, $acceptablePermissions);
+        return $this->roleManager->addPermissionsToRole($role, $permissions);
 
     }
 
+    /**
+     * @param $role
+     * @return bool
+     */
     public function checkRoleIsDeletable($role)
     {
-
-        if ($role instanceof RoleInterface) {
-            $roleName = $role->getName();
-        } else {
-            if (is_numeric($role)) {
-                $role = $this->roleManager->findOneById($role);
-                $roleName = $role->getName();
-            } else {
-                $roleName = $role;
-            }
-        }
+        $role = $this->roleManager->getRole($role);
 
         $defaultRoles = $this->config['default_roles'];
 
-        return !in_array($roleName, $defaultRoles);
+        return !in_array($role->getName(), $defaultRoles);
     }
 }
 

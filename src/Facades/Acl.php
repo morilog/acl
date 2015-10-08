@@ -5,5 +5,5 @@ use Illuminate\Support\Facades\Facade;
 
 class Acl extends Facade
 {
-    protected static function getFacadeAccessor() { return 'moirlog.acl'; }
+    protected static function getFacadeAccessor() { return 'morilog.acl'; }
 }
