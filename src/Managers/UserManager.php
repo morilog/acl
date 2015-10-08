@@ -1,5 +1,5 @@
 <?php
-namespace Morilog\Acl;
+namespace Morilog\Acl\Managers;
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Collection;

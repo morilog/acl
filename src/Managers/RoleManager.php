@@ -1,5 +1,5 @@
 <?php
-namespace Morilog\Acl;
+namespace Morilog\Acl\Managers;
 
 use Morilog\Acl\Managers\Interfaces\RoleManagerInterface;
 use Morilog\Acl\Managers\Interfaces\PermissionManagerInterface;

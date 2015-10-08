@@ -3,6 +3,8 @@ namespace Morilog\Acl;
 
 use Illuminate\Support\ServiceProvider;
 use Morilog\Acl\Managers\PermissionManager;
+use Morilog\Acl\Managers\RoleManager;
+use Morilog\Acl\Managers\UserManager;
 
 class AclServiceProvider extends ServiceProvider
 {
