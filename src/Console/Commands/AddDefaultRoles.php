@@ -25,7 +25,7 @@ class AddDefaultRoles extends Command
     {        
         parent::__construct();
 
-        $this->roleManger = $roleManager;
+        $this->roleManager = $roleManager;
         $this->config = $config;
     }
 
