@@ -7,6 +7,8 @@ use Morilog\Acl\Managers\PermissionManager;
 class AclServiceProvider extends ServiceProvider
 {
 
+    protected $defer = false;
+    
     public function boot()
     {
         // Publish configs
