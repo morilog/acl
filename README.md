@@ -6,13 +6,18 @@ User-Role-Permission ACL system for Laravel >= 5.1
 Add following line to your `composer.json'` file at `require` section:
 ```json
 "require": {
-    "morilog/acl": "0.1.*"
+    "morilog/acl": "dev-master"
 }
 ```
 And run `composer update`
 
 #### Configs
 `php artisan vendor:publish --provider="Morilog\Acl\AclServiceProvider" --tag="config"`
+
+in `app.php`:
+
+services: `Morilog\Acl\AclServiceProvider::class`
+alias: `'Acl' => 'Morilog\Acl\Facades\Acl'`
 
 #### Migrations
 `php artisan vendor:publish --provider="Morilog\Acl\AclServiceProvider" --tag="migration"`

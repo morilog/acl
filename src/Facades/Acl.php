@@ -1,5 +1,5 @@
 <?php
-namespace Morilog\Acl\Services\Acl\Facades;
+namespace Morilog\Acl\Facades;
 
 use Illuminate\Support\Facades\Facade;
 
