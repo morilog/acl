@@ -39,19 +39,21 @@ class AclServiceProvider extends ServiceProvider
             );
         });
 
+        $this->registerCommands();
+
     }
 
     private function registerManagers()
     {
 
-        $this->app->bind('Morilog\Acl\Managers\Interfaces\PermissionManagerInterface', function ($app){
+        $this->app->singleton('Morilog\Acl\Managers\Interfaces\PermissionManagerInterface', function ($app){
             $permissionModel = $app['config']->get('acl.permission_model');
 
             return new PermissionManager($permissionModel);
         });
 
 
-        $this->app->bind('Morilog\Acl\Managers\Interfaces\RoleManagerInterface', function ($app) {
+        $this->app->singleton('Morilog\Acl\Managers\Interfaces\RoleManagerInterface', function ($app) {
             $roleModel = $app['config']->get('acl.role_model');
 
             return new RoleManager(
@@ -60,7 +62,7 @@ class AclServiceProvider extends ServiceProvider
             );
         });
 
-        $this->app->bind('Morilog\Acl\Managers\Interfaces\UserManagerInterface', function ($app) {
+        $this->app->singleton('Morilog\Acl\Managers\Interfaces\UserManagerInterface', function ($app) {
             $userModel = $app['config']->get('acl.user_model');
 
             return new UserManager(
@@ -68,5 +70,15 @@ class AclServiceProvider extends ServiceProvider
                 $app['Morilog\Acl\Managers\Interfaces\RoleManagerInterface']
             );
         });
+    }
+
+    private function registerCommands()
+    {
+        $this->commands([
+            \Morilog\Acl\Console\Commands\AddDefaultRoles::class,
+            \Morilog\Acl\Console\Commands\AddPermissions::class,
+            \Morilog\Acl\Console\Commands\ClearPermissions::class,
+            \Morilog\Acl\Console\Commands\AssignRolesToAdmin::class,
+        ]);
     }
 }
