@@ -22,6 +22,8 @@ class AssignRolesToAdmin extends Command
 
     public function __construct(Acl $acl, Repository $config)
     {
+        parent::__construct();
+
         $this->acl = $acl;
         $this->config = $config;
     }

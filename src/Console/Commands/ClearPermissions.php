@@ -37,6 +37,7 @@ class ClearPermissions extends Command
         Repository $cache,
         ConfigRepository $config
     ) {
+        parent::__construct();
 
         $this->permissionManager = $permissionManager;
         $this->cache = $cache;

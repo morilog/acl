@@ -39,6 +39,7 @@ class AddPermissions extends Command
         Repository $cache,
         ConfigRepository $config
     ) {
+        parent::__construct();
 
         $this->router = $router;
         $this->permissionManager = $permissionManager;

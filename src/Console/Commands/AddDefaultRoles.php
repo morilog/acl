@@ -22,7 +22,9 @@ class AddDefaultRoles extends Command
     private $config;
 
     public function __construct(RoleManagerInterface $roleManager, Repository $config)
-    {
+    {        
+        parent::__construct();
+
         $this->roleManger = $roleManager;
         $this->config = $config;
     }
