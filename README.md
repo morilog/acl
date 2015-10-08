@@ -6,7 +6,7 @@ User-Role-Permission ACL system for Laravel >= 5.1
 Add following line to your `composer.json'` file at `require` section:
 ```json
 "require": {
-    "morilog/acl": "0.1"
+    "morilog/acl": "0.1.*"
 }
 ```
 And run `composer update`
