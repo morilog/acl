@@ -6,11 +6,11 @@ interface UserManagerInterface
     /**
      * @author Morteza Parvini <m.parvini@outlook.com>
      * @param $user
-     * @param array $roles
+     * @param $roles
      * @return mixed
      * @throws \Morilog\Acl\ModelNotFoundException
      */
-    public function addRolesToUser($user, array $roles = []);
+    public function addRolesToUser($user, $roles = []);
 
     /**
      * @author Morteza Parvini <m.parvini@outlook.com>

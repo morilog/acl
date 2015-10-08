@@ -388,6 +388,16 @@ class Acl
     }
 
     /**
+     * @param $roles
+     * @return mixed
+     * @throws AclException
+     */
+    public function addRoles($roles)
+    {
+        return $this->userManager->addRolesToUser($this->getUser(), $roles);
+    }
+
+    /**
      * @param $roleName
      * @return mixed
      * @throws AclException
@@ -401,16 +411,6 @@ class Acl
         }
 
         return $this->userManager->addRoleToUser($this->getUser(), $role);
-    }
-
-    /**
-     * @param $roles
-     * @return mixed
-     * @throws AclException
-     */
-    public function addRoles($roles)
-    {
-        return $this->userManager->addRolesToUser($this->getUser(), $roles);
     }
 
     public function addRolesByName(array $rolesName)

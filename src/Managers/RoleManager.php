@@ -102,10 +102,10 @@ class RoleManager implements RoleManagerInterface
     /**
      * @author Morteza Parvini <m.parvini@outlook.com>
      * @param $role
-     * @param array $permissions
+     * @param $permissions
      * @return mixed
      */
-    public function addPermissionsToRole($role, array $permissions)
+    public function addPermissionsToRole($role, $permissions)
     {
         $role = $this->getRole($role);
 
