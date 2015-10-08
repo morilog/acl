@@ -3,11 +3,12 @@
 namespace Morilog\Acl\Models;
 
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Morilog\Acl\Models\Interfaces\PermissionInterface;
 use Morilog\Acl\Models\Interfaces\RoleInterface;
 
-class Role extends BaseModel implements RoleInterface
+class Role extends Model implements RoleInterface
 {
 
     protected $table = 'roles';

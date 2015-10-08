@@ -3,10 +3,11 @@
 namespace Morilog\Acl\Models;
 
 use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Database\Eloquent\Model;
 use Morilog\Acl\Models\Interfaces\RoleInterface;
 use Morilog\Acl\Models\Interfaces\UserInterface;
 
-class User extends BaseModel implements Authenticatable, UserInterface
+class User extends Model implements Authenticatable, UserInterface
 {
 
     use  \Illuminate\Auth\Authenticatable;

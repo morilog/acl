@@ -3,9 +3,10 @@
 namespace Morilog\Acl\Models;
 
 
+use Illuminate\Database\Eloquent\Model;
 use Morilog\Acl\Models\Interfaces\PermissionInterface;
 
-class Permission extends BaseModel implements PermissionInterface
+class Permission extends Model implements PermissionInterface
 {
 
     protected $table = 'permissions';
