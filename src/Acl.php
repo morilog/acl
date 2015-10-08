@@ -404,11 +404,11 @@ class Acl
     }
 
     /**
-     * @param array $roles
+     * @param $roles
      * @return mixed
      * @throws AclException
      */
-    public function addRoles(array $roles)
+    public function addRoles($roles)
     {
         return $this->userManager->addRolesToUser($this->getUser(), $roles);
     }
