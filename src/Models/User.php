@@ -95,11 +95,11 @@ class User extends Model implements Authenticatable, UserInterface
     }
 
     /**
-     * @param array $roles
+     * @param $roles
      * @param bool $detaching
      * @return mixed
      */
-    public function addRoles(array $roles, $detaching = true)
+    public function addRoles($roles = [], $detaching = true)
     {
         $roleIds = array_map(function ($role) {
             return $role->getId();

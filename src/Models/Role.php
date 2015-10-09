@@ -70,10 +70,10 @@ class Role extends Model implements RoleInterface
     }
 
     /**
-     * @param array $permissions
+     * @param $permissions
      * @return mixed
      */
-    public function addPermissions(array $permissions)
+    public function addPermissions($permissions = [])
     {
         $permissionIds = array_map(function ($permission) {
             return $permission->getId();

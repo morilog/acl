@@ -32,10 +32,10 @@ interface RoleInterface
     public function addPermission(PermissionInterface $permission);
 
     /**
-     * @param array $permissions
+     * @param $permissions
      * @return mixed
      */
-    public function addPermissions(array $permissions);
+    public function addPermissions($permissions = []);
 
     /**
      * @return Collection
