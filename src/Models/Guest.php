@@ -33,11 +33,11 @@ class Guest implements UserInterface
     }
 
     /**
-     * @param array $roles
+     * @param Collection $roles
      * @param bool $detaching
      * @return mixed
      */
-    public function addRoles(array $roles, $detaching = true)
+    public function addRoles(Collection $roles, $detaching = true)
     {
         return true;
     }

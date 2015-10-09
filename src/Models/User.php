@@ -4,6 +4,7 @@ namespace Morilog\Acl\Models;
 
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 use Morilog\Acl\Models\Interfaces\RoleInterface;
 use Morilog\Acl\Models\Interfaces\UserInterface;
 
@@ -95,15 +96,15 @@ class User extends Model implements Authenticatable, UserInterface
     }
 
     /**
-     * @param $roles
+     * @param Collection $roles
      * @param bool $detaching
      * @return mixed
      */
-    public function addRoles($roles = [], $detaching = true)
+    public function addRoles(Collection $roles, $detaching = true)
     {
-        $roleIds = array_map(function ($role) {
+        $roleIds = $roles->map(function ($role) {
             return $role->getId();
-        }, $roles);
+        })->toArray();
 
         return $this->roles()->sync($roleIds, $detaching);
     }

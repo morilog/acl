@@ -26,11 +26,11 @@ interface UserInterface
     public function getRoles();
 
     /**
-     * @param $roles
+     * @param Collection $roles
      * @param bool $detaching
      * @return mixed
      */
-    public function addRoles($roles = [], $detaching = true);
+    public function addRoles(Collection $roles, $detaching = true);
 
     /**
      * @return Collection
