@@ -55,7 +55,7 @@ class AddPermissions extends Command
             foreach ($routes as $route) {
                 if (
                     $route->getName() !== null
-                    && $this->permissionManager->checkPermissionExistByName($route->getName())
+                    && $this->permissionManager->checkPermissionExistByName($route->getName()) === false
                 ) {
                     $permission = $this->permissionManager->createPermissionByNameAndTitle($route->getName());
 
