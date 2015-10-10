@@ -12,6 +12,8 @@ Add following line to your `composer.json'` file at `require` section:
 And run `composer update`
 
 #### Configs
+Publish configs with this command and set `admin_user_id`:
+
 ```
 php artisan vendor:publish --provider="Morilog\Acl\AclServiceProvider" --tag="config"
 ```
