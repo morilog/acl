@@ -27,6 +27,11 @@ alias:
 'Acl' => 'Morilog\Acl\Facades\Acl'
 ```
 
+#### Middleware
+Open `kernel.php` file in `app/Http' directory and add bellow line to `$routeMiddleware` array:
+~~~php
+   'acl' => Morilog\Acl\Middlewares\AclCheck::class
+~~~
 #### Migrations
 ```
 php artisan vendor:publish --provider="Morilog\Acl\AclServiceProvider" --tag="migration"
