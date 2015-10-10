@@ -1,5 +1,5 @@
 <?php
-namespace Morilog\Acl\Middleware;
+namespace Morilog\Acl\Middlewares;
 
 use Closure;
 use Morilog\Acl\Acl as AclManager;
