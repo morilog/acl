@@ -491,6 +491,11 @@ class Acl
         return $this->userManager->userIsAdmin($user);
     }
 
+    /**
+     * @author Morteza Parvini <m.parvini@outlook.com>
+     * @param $roles
+     * @return mixed
+     */
     public function removeRoles($roles)
     {
         $user = $this->getUser();
@@ -504,7 +509,7 @@ class Acl
             throw new \InvalidArgumentException('Roles must be array or structred string');
         }
 
-        
+
         return $this->userManager->removeUserRoles($user, $roles);
     }
 }

@@ -33,5 +33,8 @@
         "illuminate/auth": "5.1.*",
         "morilog/value-objects": "^1.0",
         "illuminate/console": "^5.1"
+    },
+    "require-dev": {
+        "phpdocumentor/phpdocumentor": "2.*"
     }
 }
