@@ -126,4 +126,24 @@ class UserManager implements UserManagerInterface
         return true;
     }
 
+    /**
+     * @author Morteza Parvini <m.parvini@outlook.com>
+     * @param $user
+     * @return bool
+     */
+    public function userIsAdmin($user)
+    {
+        $user = $this->getUser($user);
+        $roles = $this->roleManager->getAllRoles();
+
+        foreach ($user->getRoles() as $role) {
+            if (! in_array($role->getId(), $roles->lists('id')->toArray())) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+
 }

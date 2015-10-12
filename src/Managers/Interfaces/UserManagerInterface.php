@@ -49,4 +49,11 @@ interface UserManagerInterface
      * @return bool
      */
     public function userhasRoles($user, $roles = []);
+
+    /**
+     * @author Morteza Parvini <m.parvini@outlook.com>
+     * @param $user
+     * @return bool
+     */
+    public function userIsAdmin($user);
 }

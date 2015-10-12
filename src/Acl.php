@@ -97,7 +97,7 @@ class Acl
     }
 
     /**
-     * @return \Illuminate\Contracts\Auth\Authenticatable|User|null
+     * @return \Illuminate\Contracts\Auth\Authenticatable|UserInterface|null
      */
     protected function getUser()
     {
@@ -472,6 +472,23 @@ class Acl
         $defaultRoles = $this->config['default_roles'];
 
         return !in_array($role->getName(), $defaultRoles);
+    }
+
+    /**
+     * @author Morteza Parvini <m.parvini@outlook.com>
+     * @return bool
+     */
+    public function isAdmin()
+    {
+        $user = $this->getUser();
+
+        $isAdmin = $this->config['admin_user_id'] === $user->getId();
+
+        if ($isAdmin) {
+            return true;
+        }
+
+        return $this->userManager->userIsAdmin($user);
     }
 }
 
