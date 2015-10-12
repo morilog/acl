@@ -56,4 +56,12 @@ interface UserManagerInterface
      * @return bool
      */
     public function userIsAdmin($user);
+
+    /**
+     * @author Morteza Parvini <m.parvini@outlook.com>
+     * @param $user
+     * @param array $roles
+     * @return mixed
+     */
+    public function removeUserRoles($user, array $roles);
 }

@@ -490,5 +490,22 @@ class Acl
 
         return $this->userManager->userIsAdmin($user);
     }
+
+    public function removeRoles($roles)
+    {
+        $user = $this->getUser();
+
+        // make roles array
+        if (is_string($roles)) {
+            $roles = explode(',', $roles);
+        } else if (is_array($roles))  {
+            $roles = $roles;
+        } else {
+            throw new \InvalidArgumentException('Roles must be array or structred string');
+        }
+
+        
+        return $this->userManager->removeUserRoles($user, $roles);
+    }
 }
 

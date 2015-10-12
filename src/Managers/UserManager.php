@@ -145,5 +145,24 @@ class UserManager implements UserManagerInterface
         return true;
     }
 
+    /**
+     * @author Morteza Parvini <m.parvini@outlook.com>
+     * @param $user
+     * @param array $roles
+     * @return mixed
+     */
+    public function removeUserRoles($user, array $roles)
+    {
+        $user = $this->getUser($user);
+
+        // Reterieve role and populate $roles array with role->id
+        foreach ($roles as &$role) {
+            $role = $this->roleManager->getRole($role)->getId();
+        }
+
+        // Detach user roles
+        return $user->roles()->detach($roles);
+    }
+
 
 }
