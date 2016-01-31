@@ -19,7 +19,7 @@ class Permission extends Model implements PermissionInterface
 
     public function roles()
     {
-        return $this->belongsToMany(Role::class, 'role_permission');
+        return $this->belongsToMany(app('config')->get('acl.role_model'), 'role_permission');
     }
 
     /**
