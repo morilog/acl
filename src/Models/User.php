@@ -38,16 +38,7 @@ class User extends Model implements Authenticatable, UserInterface
      */
     public function roles()
     {
-        return $this->belongsToMany(Role::class, 'user_role', 'user_id', 'role_id');
-    }
-
-
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function emailTokens()
-    {
-        return $this->hasMany(User::class, 'user_id');
+        return $this->belongsToMany(app('config')->get('acl.user_model'), 'user_role', 'user_id', 'role_id');
     }
 
     /**
@@ -62,11 +53,6 @@ class User extends Model implements Authenticatable, UserInterface
         }
 
         return $this->username;
-    }
-
-    public function posts()
-    {
-        return $this->hasMany(Post::class, 'user_id', 'id');
     }
 
 
@@ -130,10 +116,5 @@ class User extends Model implements Authenticatable, UserInterface
         }
 
         return collect($permissions);
-    }
-
-    public function city()
-    {
-        return $this->belongsTo(City::class);
     }
 }
