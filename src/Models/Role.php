@@ -20,12 +20,12 @@ class Role extends Model implements RoleInterface
 
     public function users()
     {
-        return $this->belongsToMany(User::class, 'user_role', 'role_id', 'user_id');
+        return $this->belongsToMany(app('config')->get('acl.user_model'), 'user_role', 'role_id', 'user_id');
     }
 
     public function permissions()
     {
-        return $this->belongsToMany(Permission::class, 'role_permission');
+        return $this->belongsToMany(app('config')->get('acl.permission_model'), 'role_permission');
     }
 
     /**
