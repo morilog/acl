@@ -38,7 +38,7 @@ class User extends Model implements Authenticatable, UserInterface
      */
     public function roles()
     {
-        return $this->belongsToMany(app('config')->get('acl.user_model'), 'user_role', 'user_id', 'role_id');
+        return $this->belongsToMany(app('config')->get('acl.role_model'), 'user_role', 'user_id', 'role_id');
     }
 
     /**
